@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+  <title>Chat</title>
+  <link rel="stylesheet" href="chat.css">
+  <script src="bridge.js" defer></script>
+  <script src="chat.js" defer></script>
+</head>
+<body>
+  <main class="chat">
+    <header class="chat-heading">
+      <span>Chat</span>
+      <span id="project-title"></span>
+    </header>
+    <section id="conversation" class="conversation" aria-label="Conversazione">
+      <div id="empty-chat" class="empty-chat">
+        <svg viewBox="0 0 32 32" width="38" height="38" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true"><path d="M16 3v26M3 16h26M7 7l18 18M25 7 7 25"/><circle cx="16" cy="16" r="10"/></svg>
+        <h1>Da dove iniziamo?</h1>
+        <p>Uno spazio per ragionare sul tuo progetto.</p>
+        <div class="suggestions" aria-label="Spunti per iniziare">
+          <button type="button" data-prompt="Aiutami a ragionare sugli elementi collegati.">Esplora il contesto</button>
+          <button type="button" data-prompt="Organizziamo i prossimi passi di questo progetto.">Organizza i prossimi passi</button>
+          <button type="button" data-prompt="Vorrei sviluppare una nuova idea per questo progetto.">Sviluppa un’idea</button>
+        </div>
+      </div>
+      <div id="messages" class="messages" role="log" aria-live="polite" aria-relevant="additions"></div>
+      <p id="response-status" class="response-status" role="status" hidden></p>
+      <button id="retry-message" class="retry-message" type="button" hidden>Riprova la risposta</button>
+    </section>
+    <div class="composer-area">
+      <section class="linked-context" aria-label="Contesto collegato">
+        <p id="context-hint">Collega gli elementi a questa chat con Maiusc + clic e L.</p>
+        <div id="context-elements" class="context-elements" hidden></div>
+      </section>
+      <form id="composer" class="composer">
+        <label class="visually-hidden" for="message-input">Scrivi un messaggio</label>
+        <textarea id="message-input" rows="1" placeholder="Scrivi un messaggio…" maxlength="20000"></textarea>
+        <div class="composer-actions">
+          <span id="context-count">Contesto del progetto</span>
+          <button id="stop-message" type="button" aria-label="Interrompi risposta" title="Interrompi risposta" hidden><svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor" aria-hidden="true"><rect x="6" y="6" width="12" height="12" rx="2"/></svg></button>
+          <button id="send-message" type="submit" aria-label="Invia messaggio" title="Invia messaggio" disabled><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5m-6 6 6-6 6 6"/></svg></button>
+        </div>
+        <div class="engine-settings">
+          <label class="visually-hidden" for="chat-provider">Motore</label>
+          <select id="chat-provider" aria-label="Motore" disabled><option value="codex">Codex</option><option value="claude">Claude</option></select>
+          <label class="visually-hidden" for="chat-model">Modello</label>
+          <input id="chat-model" type="text" list="chat-models" placeholder="Modello predefinito" maxlength="160" aria-label="Modello" spellcheck="false" disabled>
+          <datalist id="chat-models"></datalist>
+        </div>
+      </form>
+      <p id="engine-status" class="engine-status" role="status">Collegamento al motore…</p>
+      <p id="index-status" class="index-status" role="status" hidden></p>
+      <p class="composer-hint">Invio per inviare · Maiusc + Invio per andare a capo</p>
+    </div>
+  </main>
+</body>
+</html>

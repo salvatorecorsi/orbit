@@ -1,0 +1,20 @@
+[package]
+name = "orbit-rust"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.89"
+
+[dependencies]
+bevy = { version = "=0.18.1", default-features = false, features = ["std", "default_app", "bevy_winit", "multi_threaded", "3d_bevy_render", "ui_bevy_render", "default_font", "jpeg"] }
+wry = { version = "=0.55.0", default-features = false, features = ["os-webview", "protocol"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+image = { version = "0.25", default-features = false, features = ["png", "jpeg"] }
+webview2-com = "0.38"
+windows = { version = "0.61", features = ["Win32_System_Com", "Win32_System_Com_StructuredStorage", "Win32_System_LibraryLoader", "Win32_System_Threading", "Win32_UI_Accessibility", "Win32_UI_Shell", "Win32_UI_WindowsAndMessaging", "Win32_UI_Input_KeyboardAndMouse", "Win32_Graphics_DirectComposition", "Win32_Graphics_Direct2D_Common", "Win32_Graphics_Gdi"] }
+
+[profile.dev]
+opt-level = 1
+
+[profile.dev.package."*"]
+opt-level = 2

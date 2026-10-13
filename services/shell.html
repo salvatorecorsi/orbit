@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Orbit</title>
+  <link rel="stylesheet" href="/shell.css">
+  <script src="/shell.js" defer></script>
+</head>
+<body>
+  <header class="toolbar">
+    <button id="galaxy" class="brand" title="Torna alla galassia"><span class="brand-mark"></span>Orbit</button>
+    <span class="divider"></span>
+    <button id="project-menu" class="project-control" aria-expanded="false"><span id="project-name">Galassia</span><span class="chevron">⌄</span></button>
+    <span id="selection" class="selection" hidden><span class="selection-dot"></span><span id="selection-title"></span><button id="deselect" title="Deseleziona la finestra" aria-label="Deseleziona la finestra">×</button></span>
+    <button id="expand" class="expand-control" hidden title="Ingrandisci la finestra · Ctrl+Invio" aria-pressed="false">Ingrandisci</button>
+    <div id="navigation" class="navigation" hidden>
+      <button id="back" title="Indietro">←</button>
+      <button id="forward" title="Avanti">→</button>
+      <form id="address-form"><input id="address" aria-label="Indirizzo della pagina" spellcheck="false" autocomplete="off"></form>
+    </div>
+    <span id="scene-hint" class="scene-hint">Trascina nello spazio per ruotare · rotella per avvicinarti</span>
+    <span class="toolbar-spacer"></span>
+    <button id="close-popup" class="popup-control" hidden title="Chiudi la finestra del browser e torna alla pagina">Chiudi finestra</button>
+    <button id="windows-menu" class="windows-control" aria-expanded="false">Finestre <span id="window-count">0</span></button>
+    <button id="new-window" class="new-control" title="Nuova finestra o progetto · Ctrl+T" aria-expanded="false" aria-controls="launcher-panel" aria-keyshortcuts="Control+T Meta+T"><span>+ Nuovo</span><kbd>Ctrl+T</kbd></button>
+    <span id="status" class="status" aria-live="polite"></span>
+  </header>
+  <main id="panel" class="panel" hidden>
+    <section id="projects-panel" hidden>
+      <div class="panel-heading"><h1>Progetti</h1><button class="close-panel" aria-label="Chiudi">×</button></div>
+      <div id="project-list" class="project-list"></div>
+      <button id="create-project" class="create-project" type="button">+ Nuovo progetto</button>
+    </section>
+    <section id="windows-panel" hidden>
+      <div class="panel-heading"><h1>Finestre aperte</h1><button class="close-panel" aria-label="Chiudi">×</button></div>
+      <div id="window-list" class="window-list"></div>
+    </section>
+  </main>
+  <dialog id="launcher-panel" class="creation-palette" aria-labelledby="launcher-title">
+    <div class="panel-heading"><h1 id="launcher-title">Crea</h1><button class="close-panel" aria-label="Chiudi">×</button></div>
+    <div class="creation-options" aria-label="Cosa vuoi creare">
+      <button type="button" data-create-mode="window" aria-pressed="true">Nuova finestra</button>
+      <button type="button" data-create-mode="project" aria-pressed="false">Nuovo progetto</button>
+    </div>
+    <p id="launcher-empty" class="launcher-empty" hidden>Crea un progetto prima di aprire una finestra.</p>
+    <form id="launcher-form">
+      <label class="field">Progetto<select id="launcher-project"></select></label>
+      <label class="field"><span id="launcher-location-label">Indirizzo</span><input id="launcher-url" placeholder="https://…" autocomplete="off" spellcheck="false"></label>
+      <div id="launcher-options" class="launcher-options">
+        <button type="button" data-kind="browser"><strong>Browser</strong><span>Una pagina web</span></button>
+        <button type="button" data-kind="figma"><strong>Figma</strong><span>Design e progetti</span></button>
+        <button type="button" data-kind="code"><strong>VS Code</strong><span>Workspace locale</span></button>
+        <button type="button" data-kind="terminal"><strong>PowerShell</strong><span>Terminale locale</span></button>
+        <button type="button" data-kind="chat"><strong>Chat</strong><span>Conversazione del progetto</span></button>
+        <button type="button" data-kind="pdf"><strong>PDF</strong><span>Documento locale</span></button>
+        <button type="button" data-kind="image"><strong>Immagine</strong><span>File o indirizzo web</span></button>
+        <button type="button" data-kind="file"><strong>File</strong><span>Testo e documenti</span></button>
+      </div>
+      <button class="submit-control" type="submit">Apri browser</button>
+    </form>
+    <form id="new-project-form" hidden>
+      <label class="field">Nome del progetto<input id="new-project-title" placeholder="Nome del nuovo progetto" autocomplete="off" required maxlength="100"></label>
+      <button class="submit-control" type="submit">Crea progetto</button>
+    </form>
+  </dialog>
+</body>
+</html>

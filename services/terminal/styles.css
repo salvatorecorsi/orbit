@@ -1,0 +1,37 @@
+:root {
+  color-scheme: dark;
+  background: #0d111b;
+  color: #dbe6f4;
+  font-family: system-ui, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+body { padding: 18px 16px 12px; }
+
+#terminal { width: 100%; height: 100%; }
+
+.xterm { height: 100%; }
+
+.xterm .xterm-viewport { scrollbar-width: thin; scrollbar-color: #344257 #0d111b; }
+
+#status {
+  position: fixed;
+  inset: auto 16px 14px;
+  padding: 10px 14px;
+  color: #b5c7de;
+  background: #142036;
+  border-radius: 8px;
+  font-size: 12px;
+}
+
+#status.failed { color: #efb7b7; background: #32202d; }
+
+#status[hidden] { display: none; }

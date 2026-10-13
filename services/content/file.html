@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; font-src 'self'; img-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+  <title>File</title>
+  <link rel="stylesheet" href="file.css">
+  <script src="bridge.js" defer></script>
+  <script src="file.js" defer></script>
+</head>
+<body>
+  <main class="file-viewer">
+    <svg viewBox="0 0 48 56" width="48" height="56" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><path d="M8 3h22l10 10v40H8zM30 3v10h10M16 26h16M16 34h16M16 42h10"/></svg>
+    <p id="file-kind"></p>
+    <h1 id="file-name">Apertura file…</h1>
+    <p id="file-path"></p>
+    <button id="open-file" type="button" disabled>Apri con l’app di sistema</button>
+    <p id="file-error" role="alert" hidden></p>
+  </main>
+</body>
+</html>

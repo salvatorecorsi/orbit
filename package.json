@@ -1,0 +1,19 @@
+{
+  "name": "orbit-rust-services",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Local services for the ORBIT Rust desktop application",
+  "scripts": {
+    "start": "node services/host.js",
+    "test:services": "node --test services/host.test.js services/navigation-addresses.test.js services/project-store.test.js"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "4.3.0",
+    "@napi-rs/canvas": "1.0.10",
+    "@xterm/addon-fit": "0.11.0",
+    "@xterm/xterm": "6.0.0",
+    "fflate": "0.8.3",
+    "node-pty": "1.1.0",
+    "ws": "8.22.0"
+  }
+}

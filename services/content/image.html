@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' file: https: http: data:; script-src 'self'; font-src 'self'; style-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'; frame-src 'none'">
+  <title>Immagine</title>
+  <link rel="stylesheet" href="image.css">
+  <script src="image.js" defer></script>
+</head>
+<body>
+  <main id="image-stage" aria-label="Vista immagine">
+    <img id="image" alt="" referrerpolicy="no-referrer" draggable="false" hidden>
+    <div id="image-status" role="status" aria-live="polite">
+      <p id="status-message">Caricamento immagine…</p>
+      <p id="image-name"></p>
+    </div>
+  </main>
+</body>
+</html>

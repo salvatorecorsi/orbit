@@ -1,0 +1,19 @@
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('../fonts/space-grotesk.ttf') format('truetype');
+  font-weight: 300 700;
+  font-display: swap;
+}
+
+:root { color-scheme: dark; font-family: 'Space Grotesk', sans-serif; background: #10111b; color: #dddfe9; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+[hidden] { display: none !important; }
+.file-viewer { min-height: 100dvh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 18px; padding: 40px; text-align: center; }
+.file-viewer > svg { color: #99a5ce; }
+.file-viewer h1 { margin: 0; font-size: clamp(24px, 4vw, 44px); font-weight: 400; letter-spacing: -.04em; overflow-wrap: anywhere; }
+.file-viewer p { max-width: 720px; margin: 0; color: #85889f; font-size: 12px; line-height: 1.6; overflow-wrap: anywhere; }
+.file-viewer button { margin-top: 8px; padding: 11px 18px; border: 1px solid rgb(214 219 255 / 12%); border-radius: 8px; background: #1b1d2b; color: #dddfe9; font: inherit; font-size: 12px; cursor: pointer; }
+.file-viewer button:disabled { opacity: .4; cursor: default; }
+.file-viewer button:focus-visible { outline: 2px solid #a4aed8; outline-offset: 4px; }
+#file-error { color: #d1a397; }

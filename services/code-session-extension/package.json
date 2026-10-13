@@ -1,0 +1,43 @@
+{
+  "name": "orbit-session",
+  "displayName": "ORBIT Sessions",
+  "description": "Conserva gli editor aperti nell’elemento VS Code del progetto ORBIT.",
+  "publisher": "orbit",
+  "version": "1.0.0",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "main": "./main.js",
+  "extensionKind": ["workspace"],
+  "activationEvents": ["onStartupFinished"],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": true
+    }
+  },
+  "contributes": {
+    "configuration": {
+      "title": "ORBIT",
+      "properties": {
+        "orbit.projectId": {
+          "type": "string",
+          "default": "",
+          "scope": "window",
+          "description": "Identificatore del progetto ORBIT."
+        },
+        "orbit.elementId": {
+          "type": "string",
+          "default": "",
+          "scope": "window",
+          "description": "Identificatore della schermata VS Code."
+        },
+        "orbit.stateFile": {
+          "type": "string",
+          "default": "",
+          "scope": "window",
+          "description": "Percorso dello stato editor relativo al file workspace."
+        }
+      }
+    }
+  }
+}

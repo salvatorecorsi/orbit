@@ -1,0 +1,13 @@
+/target/
+node_modules/
+/projects/
+/.runtime/
+/services/.runtime/
+/services/workspace/
+/artifacts/
+.DS_Store
+Thumbs.db
+*.log
+.env
+.env.*
+!.env.example
