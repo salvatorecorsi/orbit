@@ -28,7 +28,15 @@ pub struct ServiceProcess {
 
 impl ServiceProcess {
     pub fn start(directory: &Path, projects: &Path) -> std::io::Result<Self> {
-        let mut command = Command::new("node");
+        let bundled_node = directory.join("runtime/node.exe");
+        let executable = std::env::var_os("ORBIT_NODE_EXECUTABLE").unwrap_or_else(|| {
+            if bundled_node.is_file() {
+                bundled_node.into_os_string()
+            } else {
+                "node".into()
+            }
+        });
+        let mut command = Command::new(executable);
         command
             .arg(directory.join("services/host.js"))
             .arg("--projects")

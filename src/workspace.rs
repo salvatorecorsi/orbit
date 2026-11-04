@@ -39,7 +39,6 @@ pub struct OrbitWorkspace {
 
 impl OrbitWorkspace {
     pub fn apply(&mut self, document: Value) {
-        let previous_ids: Vec<_> = self.tabs.iter().map(|tab| tab.id.clone()).collect();
         let mut projects = Vec::new();
         if let Some(records) = document["projects"].as_array() {
             for (index, record) in records.iter().enumerate() {
@@ -67,7 +66,7 @@ impl OrbitWorkspace {
                 });
             }
         }
-        self.tabs = document["tabs"]
+        let tabs: Vec<Tab> = document["tabs"]
             .as_array()
             .into_iter()
             .flatten()
@@ -80,6 +79,19 @@ impl OrbitWorkspace {
                 document: record.clone(),
             })
             .collect();
+        let scene_changed = self
+            .projects
+            .iter()
+            .map(|project| (&project.id, &project.title))
+            .ne(projects.iter().map(|project| (&project.id, &project.title)))
+            || self
+                .tabs
+                .iter()
+                .map(|tab| (&tab.id, &tab.project_id, &tab.title, &tab.kind))
+                .ne(tabs
+                    .iter()
+                    .map(|tab| (&tab.id, &tab.project_id, &tab.title, &tab.kind)));
+        self.tabs = tabs;
         if self.revision == 0
             || self
                 .current_project
@@ -98,14 +110,7 @@ impl OrbitWorkspace {
         }
         self.projects = projects;
         self.document = document;
-        if previous_ids
-            != self
-                .tabs
-                .iter()
-                .map(|tab| tab.id.clone())
-                .collect::<Vec<_>>()
-            || self.revision == 0
-        {
+        if scene_changed || self.revision == 0 {
             self.revision += 1;
         }
         self.shell_dirty = true;
@@ -147,3 +152,89 @@ pub enum WorkspaceAction {
 
 #[derive(Resource, Default)]
 pub struct WorkspaceActions(pub Vec<WorkspaceAction>);
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn creating_empty_projects_invalidates_the_scene() {
+        let mut workspace = OrbitWorkspace::default();
+        workspace.apply(json!({"projects": [], "tabs": []}));
+        let initial_revision = workspace.revision;
+
+        workspace.apply(json!({
+            "projects": [{"id": "first", "title": "Primo progetto"}],
+            "tabs": []
+        }));
+        assert_eq!(workspace.revision, initial_revision + 1);
+        assert_eq!(workspace.projects.len(), 1);
+        assert!(workspace.tabs.is_empty());
+
+        workspace.apply(json!({
+            "projects": [
+                {"id": "first", "title": "Primo progetto"},
+                {"id": "second", "title": "Secondo progetto"}
+            ],
+            "tabs": []
+        }));
+        assert_eq!(workspace.revision, initial_revision + 2);
+        assert_eq!(workspace.projects.len(), 2);
+        assert!(workspace.tabs.is_empty());
+    }
+
+    #[test]
+    fn unchanged_scene_and_navigation_updates_preserve_the_revision() {
+        let mut document = json!({
+            "projects": [{"id": "project", "title": "Progetto"}],
+            "tabs": [{
+                "id": "tab", "projectId": "project", "title": "Pagina",
+                "kind": "browser", "url": "https://example.com"
+            }]
+        });
+        let mut workspace = OrbitWorkspace::default();
+        workspace.apply(document.clone());
+        let revision = workspace.revision;
+
+        workspace.apply(document.clone());
+        assert_eq!(workspace.revision, revision);
+
+        document["tabs"][0]["url"] = json!("https://example.com/next");
+        document["scene"] = json!({"currentProjectId": "project"});
+        workspace.apply(document);
+        assert_eq!(workspace.revision, revision);
+        assert_eq!(workspace.tabs[0].url, "https://example.com/next");
+    }
+
+    #[test]
+    fn scene_labels_and_tab_project_changes_invalidate_the_scene() {
+        let mut document = json!({
+            "projects": [
+                {"id": "first", "title": "Primo progetto"},
+                {"id": "second", "title": "Secondo progetto"}
+            ],
+            "tabs": [{
+                "id": "tab", "projectId": "first", "title": "Pagina", "kind": "browser"
+            }]
+        });
+        let mut workspace = OrbitWorkspace::default();
+        workspace.apply(document.clone());
+        let revision = workspace.revision;
+
+        document["projects"][0]["title"] = json!("Progetto rinominato");
+        workspace.apply(document.clone());
+        assert_eq!(workspace.revision, revision + 1);
+
+        document["tabs"][0]["title"] = json!("Pagina rinominata");
+        workspace.apply(document.clone());
+        assert_eq!(workspace.revision, revision + 2);
+
+        document["tabs"][0]["projectId"] = json!("second");
+        workspace.apply(document.clone());
+        assert_eq!(workspace.revision, revision + 3);
+
+        document["tabs"][0]["kind"] = json!("figma");
+        workspace.apply(document);
+        assert_eq!(workspace.revision, revision + 4);
+    }
+}

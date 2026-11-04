@@ -6,6 +6,24 @@ Browser, Figma, VS Code web, PowerShell, chat CLI, immagini, PDF e file usano co
 
 ## Avvio
 
+### Eseguibile Windows singolo
+
+La distribuzione `Orbit.exe` per Windows x64 include l'app, Node.js, i servizi locali, le librerie native e la CLI dell'editor. Basta aprire il file: alla prima esecuzione prepara automaticamente i componenti in `%LOCALAPPDATA%\Orbit\versions\<hash>`. Le aperture successive riutilizzano la versione già preparata. Non servono Rust, npm o il repository sul computer che esegue il pacchetto.
+
+Progetti, stato della scena, log, profilo browser e cache restano in `%LOCALAPPDATA%\Orbit`, separati dai file dell'app e conservati quando sostituisci l'EXE. `ORBIT_DATA_DIRECTORY` consente di scegliere un'altra cartella dati; `ORBIT_CACHE_DIRECTORY` cambia la cartella delle versioni estratte. `--projects CARTELLA` apre una cartella progetti già esistente. I dati del precedente checkout non vengono importati automaticamente.
+
+Se WebView2 non è presente, il launcher esegue il bootstrapper Microsoft incluso: questo passaggio richiede Internet. Anche il primo avvio dell'editor e il modello per l'indicizzazione possono richiedere download. Le chat AI usano le CLI Codex/Claude e gli accessi dell'account Windows; il pacchetto non include credenziali o abbonamenti.
+
+Per ricostruire il pacchetto da sorgente su Windows x64 con Rust/MSVC, Node.js e npm:
+
+```powershell
+.\scripts\build-windows.ps1 -OutputPath .\Orbit.exe
+```
+
+Lo script compila la release, installa le dipendenze bloccate, include i runtime e genera l'EXE autoestraente. `-NodeExecutable`, `-CodeExecutable` e `-MsvcRuntimeDirectory` permettono di scegliere componenti già disponibili; `-SkipBuild -SkipInstall` riutilizzano una build e dipendenze preparate in precedenza. Il launcher verifica il payload con SHA-256 e completa l'estrazione prima di avviare l'app. Gli errori vengono mostrati in una finestra e salvati in `runtime\launcher.log` nella cartella dati.
+
+### Sviluppo dal repository
+
 Servono Rust, Node.js e il runtime Microsoft Edge WebView2. Le versioni bloccate di Bevy e Wry sono compatibili con il Rust 1.94.1 installato su questa macchina. VS Code serve-web viene avviato localmente alla prima apertura dell'editor; chat e terminale usano le CLI e la shell del computer.
 
 ```powershell
@@ -35,6 +53,9 @@ Le finestre aperte da una pagina conservano il collegamento al genitore e il suo
 Se le cartelle di alcuni progetti sono state rimosse, l'app conserva una copia esatta del registro in `projects/workspace.recovery-<id>.info` e avvia i progetti ancora disponibili. Quando sono state rimosse tutte, la galassia vuota permette di creare un nuovo progetto dalla barra. Una cartella presente con `project.info` mancante o incoerente resta un errore di caricamento.
 
 `--projects CARTELLA` sceglie i dati. `ORBIT_RUST_STATE_DIRECTORY` separa camera e catture, `ORBIT_RUST_PROFILE_DIRECTORY` separa cookie e dati WebView2, `ORBIT_RUNTIME_DIRECTORY` separa i servizi temporanei e `ORBIT_EMBEDDING_CACHE` sceglie la cache del modello locale.
+
+`ORBIT_APP_DIRECTORY` seleziona le risorse dell'app, `ORBIT_NODE_EXECUTABLE` il processo Node e `ORBIT_CODE_EXECUTABLE` la CLI dell'editor. In una distribuzione i servizi vengono cercati accanto all'eseguibile, insieme ai componenti inclusi in `runtime/`.
+`ORBIT_CODE_STARTUP_TIMEOUT_MS` regola l'attesa per il primo avvio dell'editor (predefinita: cinque minuti).
 
 ## Verifica
 

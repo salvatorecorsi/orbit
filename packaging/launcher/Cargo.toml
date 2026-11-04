@@ -1,0 +1,16 @@
+[package]
+name = "orbit-launcher"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.94"
+publish = false
+
+[dependencies]
+sha2 = "0.10"
+zip = { version = "2.4.2", default-features = false, features = ["deflate"] }
+
+[profile.release]
+opt-level = "s"
+strip = true
+panic = "abort"
+

@@ -69,18 +69,19 @@ function extractOffice(bytes, extension) {
 let pdfModule;
 
 async function extractPdf(bytes) {
+  const pdfDirectory = path.dirname(require.resolve('pdfjs-dist/package.json'));
   if (!pdfModule) {
     const canvas = require('@napi-rs/canvas');
     globalThis.DOMMatrix ||= canvas.DOMMatrix;
     globalThis.ImageData ||= canvas.ImageData;
     globalThis.Path2D ||= canvas.Path2D;
-    pdfModule = await import(pathToFileURL(path.resolve(__dirname, '../../vendor/pdfjs/pdf.mjs')).href);
+    pdfModule = await import(pathToFileURL(require.resolve('pdfjs-dist/legacy/build/pdf.mjs')).href);
   }
   const loadingTask = pdfModule.getDocument({
     data: new Uint8Array(bytes), useSystemFonts: false, disableFontFace: true,
-    standardFontDataUrl: pathToFileURL(path.resolve(__dirname, '../../vendor/pdfjs/standard_fonts')).href + '/',
-    cMapUrl: pathToFileURL(path.resolve(__dirname, '../../vendor/pdfjs/cmaps')).href + '/',
-    wasmUrl: pathToFileURL(path.resolve(__dirname, '../../vendor/pdfjs/wasm')).href + '/',
+    standardFontDataUrl: pathToFileURL(path.join(pdfDirectory, 'standard_fonts')).href + '/',
+    cMapUrl: pathToFileURL(path.join(pdfDirectory, 'cmaps')).href + '/',
+    wasmUrl: pathToFileURL(path.join(pdfDirectory, 'wasm')).href + '/',
     verbosity: 0
   });
   const document = await loadingTask.promise;

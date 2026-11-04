@@ -79,7 +79,7 @@ async function api(ready, tabId, method, params = {}) {
   return result.result;
 }
 
-test('local sidecar preserves original projects and serves real apps', { timeout: 240000 }, async context => {
+test('local sidecar preserves original projects and serves real apps', { timeout: 480000 }, async context => {
   const originalDirectory = path.resolve(applicationDirectory, '..', 'new-ux-mockup', 'test', 'browser-universe', 'projects');
   const originalDigest = await digestFiles(originalDirectory).catch(error => { if (error.code !== 'ENOENT') throw error; return null; });
   const temporaryDirectory = await fs.mkdtemp(path.join(os.tmpdir(), 'orbit-rust-test-'));
@@ -174,7 +174,7 @@ test('local sidecar preserves original projects and serves real apps', { timeout
   await once(connection, 'close');
 
   const code = await host.invoke('createTab', { projectId, kind: 'code' });
-  const codeAddress = await host.invoke('resolveTab', { id: code.id }, 150000);
+  const codeAddress = await host.invoke('resolveTab', { id: code.id }, 330000);
   const challenge = await fetch(codeAddress.url, { redirect: 'manual' });
   const editor = challenge.status >= 300 && challenge.status < 400
     ? await fetch(new URL(challenge.headers.get('location'), codeAddress.url), { headers: { Cookie: challenge.headers.getSetCookie().map(value => value.split(';')[0]).join('; ') } })

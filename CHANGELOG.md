@@ -1,5 +1,19 @@
 # Changelog
 
+## 2026-11-04 — Progetti vuoti e distribuzione Windows
+
+### Modifiche effettuate
+- Corretto l'aggiornamento della scena quando viene creato un progetto senza finestre: il pianeta appare subito. L'invalidazione considera progetti, etichette e associazioni delle finestre, evitando ricostruzioni per aggiornamenti invariati o della sola navigazione. Aggiunti test di regressione.
+- Eliminata la dipendenza della build release dalla cartella sorgente; risorse, Node e CLI dell'editor possono essere risolti dal pacchetto e tramite override espliciti.
+- Aggiunti launcher autoestraente e script `scripts/build-windows.ps1` per generare un singolo `Orbit.exe`, con servizi, Node, CLI editor, librerie native e bootstrapper WebView2. Cache delle versioni e dati utente sono separati.
+- Inclusa PDF.js come dipendenza bloccata, correggendo il riferimento a una cartella vendor esterna al repository.
+
+### Note
+- L'EXE prepara i componenti in AppData al primo avvio. WebView2, server editor e modello di indicizzazione possono richiedere Internet al primo utilizzo; le chat AI richiedono le CLI e i rispettivi accessi.
+- Build release, 11 test Rust (inclusi i nuovi casi dei progetti vuoti), 11 test dei servizi con terminale ed editor reali e test del launcher superati. Verificati anche estrazione, riuso della cache, lock tra processi e conservazione dei dati del progetto di prova.
+
+---
+
 ## 2026-10-13 — Palette flottante di creazione
 
 ### Richiesta

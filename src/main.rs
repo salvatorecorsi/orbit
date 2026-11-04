@@ -39,14 +39,19 @@ fn main() {
         }
         return;
     }
-    let directory = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    std::env::set_current_dir(&directory).expect("project directory");
+    let invocation_directory = std::env::current_dir().expect("working directory");
+    let directory = application_directory().unwrap_or_else(|error| {
+        eprintln!("Impossibile trovare i file di ORBIT: {error}");
+        std::process::exit(1);
+    });
     let projects = arguments
         .iter()
         .position(|argument| argument == "--projects")
         .and_then(|index| arguments.get(index + 1))
-        .map(PathBuf::from)
+        .map(|value| invocation_directory.join(value))
+        .or_else(|| std::env::var_os("ORBIT_PROJECTS_DIRECTORY").map(PathBuf::from))
         .unwrap_or_else(|| directory.join("projects"));
+    std::env::set_current_dir(&directory).expect("application directory");
     let service = match ServiceProcess::start(&directory, &projects) {
         Ok(service) => service,
         Err(error) => {
@@ -112,4 +117,33 @@ fn main() {
                 .after(CameraUpdateSystems),
         )
         .run();
+}
+
+fn application_directory() -> std::io::Result<PathBuf> {
+    let directory = if let Some(directory) = std::env::var_os("ORBIT_APP_DIRECTORY") {
+        PathBuf::from(directory)
+    } else {
+        let executable = std::env::current_exe()?;
+        let adjacent = executable.parent().ok_or_else(|| {
+            std::io::Error::other("Il percorso dell'eseguibile non ha una cartella padre.")
+        })?;
+        if adjacent.join("services/host.js").is_file() {
+            adjacent.to_path_buf()
+        } else if cfg!(debug_assertions) {
+            PathBuf::from(env!("CARGO_MANIFEST_DIR"))
+        } else {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::NotFound,
+                "La cartella services deve essere accanto all'eseguibile.",
+            ));
+        }
+    };
+    let directory = directory.canonicalize()?;
+    if !directory.join("services/host.js").is_file() {
+        return Err(std::io::Error::new(
+            std::io::ErrorKind::NotFound,
+            format!("services/host.js non trovato in {}", directory.display()),
+        ));
+    }
+    Ok(directory)
 }

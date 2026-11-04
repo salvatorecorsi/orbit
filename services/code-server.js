@@ -91,6 +91,23 @@ async function installSessionExtension(runtimeDirectory) {
 }
 
 async function findCodeExecutable() {
+  if (process.env.ORBIT_CODE_EXECUTABLE !== undefined) {
+    const configuredPath = process.env.ORBIT_CODE_EXECUTABLE;
+    try {
+      if (!configuredPath.trim()) throw new Error('Percorso vuoto.');
+      const executable = path.resolve(configuredPath);
+      if (!(await fs.stat(executable)).isFile()) throw new Error('Il percorso non è un file.');
+      return executable;
+    } catch (error) {
+      throw new Error(`ORBIT_CODE_EXECUTABLE non valido: ${configuredPath || '(vuoto)'}. ${error.message}`, { cause: error });
+    }
+  }
+
+  const bundledExecutable = path.join(__dirname, '..', 'runtime', 'code-tunnel.exe');
+  try {
+    if ((await fs.stat(bundledExecutable)).isFile()) return bundledExecutable;
+  } catch {}
+
   const installDirectories = [
     process.env.LOCALAPPDATA && path.join(process.env.LOCALAPPDATA, 'Programs', 'Microsoft VS Code'),
     process.env.ProgramFiles && path.join(process.env.ProgramFiles, 'Microsoft VS Code'),
@@ -189,6 +206,10 @@ function abortedStartup() {
 
 async function startCodeServer({ workspaceDirectory, runtimeDirectory, signal }) {
   if (signal?.aborted) throw abortedStartup();
+  const startupTimeoutMs = Number(process.env.ORBIT_CODE_STARTUP_TIMEOUT_MS ?? 300000);
+  if (!Number.isSafeInteger(startupTimeoutMs) || startupTimeoutMs < 1000 || startupTimeoutMs > 1800000) {
+    throw new Error('ORBIT_CODE_STARTUP_TIMEOUT_MS deve essere un intero tra 1000 e 1800000 millisecondi.');
+  }
   if (process.platform !== 'win32') {
     throw new Error('Questa demo cerca VS Code locale su Windows.');
   }
@@ -264,7 +285,7 @@ async function startCodeServer({ workspaceDirectory, runtimeDirectory, signal })
   if (signal?.aborted) onAbort();
 
   try {
-    const deadline = Date.now() + 120000;
+    const deadline = Date.now() + startupTimeoutMs;
     while (Date.now() < deadline) {
       if (signal?.aborted) throw abortedStartup();
       if (processFailure) throw processFailure;
@@ -274,7 +295,7 @@ async function startCodeServer({ workspaceDirectory, runtimeDirectory, signal })
       }
       await delay(500, undefined, { signal });
     }
-    throw new Error('Il server web VS Code non è diventato disponibile entro due minuti.');
+    throw new Error(`Il server web VS Code non è diventato disponibile entro ${startupTimeoutMs / 1000} secondi.`);
   } catch (error) {
     await stop();
     if (signal?.aborted || error.name === 'AbortError') throw abortedStartup();
